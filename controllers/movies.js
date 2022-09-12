@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const Movie = require('../models/movie');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
@@ -12,11 +13,11 @@ module.exports.getMovies = (req, res, next) => {
 
 module.exports.createMovie = (req, res, next) => {
   const {
-    name, link,
+    country, director, duration, year, description, image, trailerLink, thumbnail, movieId, nameRU, nameEN,
   } = req.body;
 
   Movie.create({
-    name, link, owner: req.user._id,
+    country, director, duration, year, description, image, trailerLink, thumbnail, owner: req.user._id, movieId, nameRU, nameEN,
   })
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
