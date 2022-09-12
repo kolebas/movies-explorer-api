@@ -22,7 +22,7 @@ module.exports.createMovie = (req, res, next) => {
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+        next(new BadRequestError('Переданы некорректные данные при создании фильма'));
       } else {
         next(err);
       }
@@ -31,10 +31,10 @@ module.exports.createMovie = (req, res, next) => {
 
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById({ _id: req.params.MovieId })
-    .orFail(() => new NotFoundError('Карточка с указанным _id не найдена'))
+    .orFail(() => new NotFoundError('Фильм с указанным _id не найдена'))
     .then((movie) => {
       if (!Movie.owner.equals(req.user._id)) {
-        throw new PermitionError('Нельзя удалить чужую карточку');
+        throw new PermitionError('Нельзя удалить чужой фильм');
       }
       return Movie.remove()
         .then(() => res.send(movie));
