@@ -30,13 +30,13 @@ module.exports.createMovie = (req, res, next) => {
 };
 
 module.exports.deleteMovie = (req, res, next) => {
-  Movie.findById({ _id: req.params.MovieId })
+  Movie.findById({ _id: req.params.id })
     .orFail(() => new NotFoundError('Фильм с указанным _id не найдена'))
     .then((movie) => {
-      if (!Movie.owner.equals(req.user._id)) {
+      if (!movie.owner.equals(req.user._id)) {
         throw new PermitionError('Нельзя удалить чужой фильм');
       }
-      return Movie.remove()
+      return movie.remove()
         .then(() => res.send(movie));
     })
     .catch(next);
