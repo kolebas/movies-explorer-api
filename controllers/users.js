@@ -5,7 +5,6 @@ const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 const BadRequestError = require('../errors/bad-request-err');
 const Auth = require('../errors/auth-err');
-require('dotenv').config();
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -67,33 +66,18 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.updateUserProfileById = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     { new: true, runValidators: true },
   )
     .then((user) => { if (!user) { throw new NotFoundError('Нет пользователя с таким id'); } res.send({ data: user }); })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже существует'));
+      } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
-      } else {
-        next(err);
-      }
-    });
-};
-
-module.exports.updateUserAvatarById = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-    { new: true },
-  )
-    .then((user) => { if (!user) { throw new NotFoundError('Нет пользователя с таким id'); } res.send({ data: user }); })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       } else {
         next(err);
       }
