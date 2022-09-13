@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const isURL = require('validator/lib/isURL');
 const {
   getMovies, createMovie, deleteMovie,
 } = require('../controllers/movies');
@@ -12,11 +13,25 @@ router.post('/', celebrate({
     duration: Joi.number().required(),
     year: Joi.string().required(),
     description: Joi.string().required(),
-    image: Joi.string().required().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
-    trailerLink: Joi.string().required().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
-    thumbnail: Joi.string().required().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
-    movieId: Joi.string().required(),
-    owner: Joi.string().required(),
+    image: Joi.string().required().custom((value, helpers) => {
+      if (isURL(value)) {
+        return value;
+      }
+      return helpers.message('Указана не правильная ссылка на обложку');
+    }),
+    trailerLink: Joi.string().required().custom((value, helpers) => {
+      if (isURL(value)) {
+        return value;
+      }
+      return helpers.message('Указана не правильная ссылка на трейлер');
+    }),
+    thumbnail: Joi.string().required().custom((value, helpers) => {
+      if (isURL(value)) {
+        return value;
+      }
+      return helpers.message('Указана не правильная ссылка на миниатюру');
+    }),
+    movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
   }),
