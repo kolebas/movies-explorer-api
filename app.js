@@ -37,8 +37,7 @@ app.use((req, res, next) => {
       return res.end();
     }
   }
-  next();
-  return res.end();
+  return (next());
 });
 
 app.use(requestLogger);
@@ -55,7 +54,7 @@ app.use((err, req, res, next) => {
 });
 
 async function main() {
-  await mongoose.connect(`mongodb://localhost:27017/${db}`);
+  await mongoose.connect(`mongodb://0.0.0.0:27017/${db}`);
   await app.listen(PORT);
 }
 
