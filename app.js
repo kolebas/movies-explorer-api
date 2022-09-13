@@ -1,8 +1,12 @@
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+
+const { NODE_ENV, DB } = process.env;
+const db = NODE_ENV === 'production' ? DB : 'moviedb-dev';
 const router = require('./routes/index');
 require('dotenv').config();
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -20,7 +24,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
 
-// eslint-disable-next-line consistent-return
 app.use((req, res, next) => {
   const { origin } = req.headers;
   const requestHeaders = req.headers['access-control-request-headers'];
@@ -35,6 +38,7 @@ app.use((req, res, next) => {
     }
   }
   next();
+  return res.end();
 });
 
 app.use(requestLogger);
@@ -51,7 +55,7 @@ app.use((err, req, res, next) => {
 });
 
 async function main() {
-  await mongoose.connect('mongodb://localhost:27017/moviedb');
+  await mongoose.connect(`mongodb://localhost:27017/${db}`);
   await app.listen(PORT);
 }
 
