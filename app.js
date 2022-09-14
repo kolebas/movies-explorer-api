@@ -5,8 +5,12 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
-const { NODE_ENV, DB } = process.env;
-const db = NODE_ENV === 'production' ? DB : 'moviedb-dev';
+const {
+  NODE_ENV, DB_SERVER, DB_PORT, DB_NAME,
+} = process.env;
+const dbServer = NODE_ENV === 'production' ? DB_SERVER : '0.0.0.0';
+const dbPort = NODE_ENV === 'production' ? DB_PORT : '27017';
+const dbName = NODE_ENV === 'production' ? DB_NAME : 'moviedb-dev';
 const router = require('./routes/index');
 require('dotenv').config();
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -54,7 +58,7 @@ app.use((err, req, res, next) => {
 });
 
 async function main() {
-  await mongoose.connect(`mongodb://0.0.0.0:27017/${db}`);
+  await mongoose.connect(`mongodb://${dbServer}:${dbPort}/${dbName}`);
   await app.listen(PORT);
 }
 
