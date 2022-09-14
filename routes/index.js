@@ -11,6 +11,7 @@ const {
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
@@ -19,9 +20,7 @@ router.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
+    name: Joi.string().min(2).max(30).required(),
   }),
 }), createUser);
 
